@@ -1,0 +1,65 @@
+{
+  "id": "3854132",
+  "name": "大屏",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "33798697",
+      "name": "持平",
+      "font_class": "chiping",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "33798698",
+      "name": "下跌",
+      "font_class": "xiadie",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "33795640",
+      "name": "顶部时间",
+      "font_class": "dingbushijian",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "33795641",
+      "name": "合同",
+      "font_class": "hetong",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "33795642",
+      "name": "装饰",
+      "font_class": "zhuangshi",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "33795643",
+      "name": "收款",
+      "font_class": "shoukuan",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "33795644",
+      "name": "顶部日历",
+      "font_class": "dingburili",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "33795877",
+      "name": "上涨",
+      "font_class": "shangzhang",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    }
+  ]
+}

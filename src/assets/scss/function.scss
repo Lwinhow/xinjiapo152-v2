@@ -1,0 +1,15 @@
+// 定义全局可用的公共scss函数
+
+$design-width: 1920;
+$design-height: 1920;
+// px单位转换为vw
+@function px2vw($num) {
+  @return $num / ($design-width / 100) + vw;
+}
+// px单位转换为vh
+@function px2vh($num) {
+  @return $num / ($design-height / 100) + vh;
+}
+
+
+

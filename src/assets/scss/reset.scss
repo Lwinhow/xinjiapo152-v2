@@ -1,0 +1,29 @@
+@charset"utf-8";
+/*重置样式*/
+html,body,ul,li,ol,dl,dd,dt,p,h1,h2,h3,h4,h5,h6,form,fieldset,legend,img,input{margin:0;padding:0}
+body{font-family: 'Microsoft YaHei';}
+h1,h2,h3,h4,h5,h6{font-weight:normal;}
+b,strong{font-weight:normal;}
+em,i{font-style:normal;}
+a,u{text-decoration:none;}
+img{border:0;display:block;}
+ul,ol,li{list-style:none;}
+button{outline:none}
+textarea:focus{outline:none}
+*{box-sizing:border-box;}/*触发怪异盒模型 */
+//select,input{outline-color:black} //设置聚焦时的边框颜色
+.clear-fix:after{content:".";clear:both;display:block;height:0;overflow: hidden;visibility: hidden;} // 清除浮动
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 3px;
+  height: 5px;
+  border-radius:3px;
+  color: transparent;
+  background-color: rgba(0, 0, 0,0.5);
+}
+::-webkit-scrollbar-thumb {
+  width: 3px;
+  height: 5px;
+  border-radius:3px;
+  background-color: rgba(255, 255, 255,0.4);
+}

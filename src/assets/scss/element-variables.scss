@@ -1,0 +1,11 @@
+/* 通过此文件可以修改element内部定义的scss颜色变量值 
+具体可以修改哪些变量值参考 element在线主题编辑器:
+https://element.eleme.cn/#/zh-CN/theme/preview */
+
+/* 改变主题色变量 */
+$--color-primary: #409EFF;
+
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";

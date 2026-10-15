@@ -1,0 +1,7 @@
+// 集中引入scss文件   在这里引入的scss将变为全局scss
+
+@import "reset";// 重置样式文件
+@import "color";// 全局颜色值变量
+@import "function";// 全局可用的公共scss函数
+@import "mixin";// 全局可用的公用scss mixin样式
+@import "common";// 相同，可复用样式的定义文件
