@@ -14,7 +14,13 @@
     "build": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
     "upload-server": "node server/index.mjs",
-    "server": "node server/index.mjs"
+    "server": "node server/index.mjs",
+    "server:dev": "node server/index.mjs development",
+    "server:test": "node server/index.mjs test",
+    "server:prod": "node server/index.mjs production",
+    "dev:all": "concurrently -k -n fe,api -c blue,green \"npm:dev\" \"npm:server:dev\"",
+    "test:all": "concurrently -k -n fe,api -c blue,green \"npm:test\" \"npm:server:test\"",
+    "prod:all": "concurrently -k -n fe,api -c blue,green \"npm:prod\" \"npm:server:prod\""
   },
   "dependencies": {
     "axios": "^1.5.0",
@@ -34,6 +40,7 @@
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "concurrently": "^9.2.5",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "sass": "^1.32.7",

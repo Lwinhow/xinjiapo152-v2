@@ -1,19 +1,19 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <div class="login-title">DE152 看板</div>
-      <div class="login-sub">请登录后访问</div>
+      <div class="login-title">DE152 Dashboard</div>
+      <div class="login-sub">Please log in to access</div>
       <el-form ref="form" :model="form" :rules="rules" @submit.native.prevent="submit">
         <el-form-item prop="username">
           <el-input v-model="form.username" prefix-icon="el-icon-user"
-                    placeholder="用户名" @keyup.enter.native="submit"/>
+                    placeholder="username" @keyup.enter.native="submit"/>
         </el-form-item>
         <el-form-item prop="password">
           <el-input v-model="form.password" type="password" show-password
-                    prefix-icon="el-icon-lock" placeholder="密码" @keyup.enter.native="submit"/>
+                    prefix-icon="el-icon-lock" placeholder="password" @keyup.enter.native="submit"/>
         </el-form-item>
         <el-form-item>
-          <el-button class="login-btn" type="primary" @click="submit">登 录</el-button>
+          <el-button class="login-btn" type="primary" @click="submit">submit</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -29,8 +29,8 @@ export default {
     return {
       form: {username: '', password: ''},
       rules: {
-        username: [{required: true, message: '请输入用户名', trigger: 'blur'}],
-        password: [{required: true, message: '请输入密码', trigger: 'blur'}]
+        username: [{required: true, message: 'Please enter your username', trigger: 'blur'}],
+        password: [{required: true, message: 'Please enter the password', trigger: 'blur'}]
       }
     }
   },
@@ -41,7 +41,7 @@ export default {
         if (login(this.form.username.trim(), this.form.password)) {
           this.$router.replace(this.$route.query.redirect || '/')
         } else {
-          this.$message.error('用户名或密码错误')
+          this.$message.error('Incorrect username or password')
         }
       })
     }

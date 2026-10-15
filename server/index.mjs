@@ -5,7 +5,8 @@
  *   版本数据  →  ./public/data  （dev 由 vue-cli serve 提供，prod 由本服务路由 /data/）
  *
  * 启动：
- *   node server/index.mjs
+ *   node server/index.mjs [development|test|production]
+ *   （环境也可用 NODE_ENV 指定；两者都缺省时为 development）
  *
  * 写入：
  *   POST /api/versions   {version:"2026-11", label:"...", source:"...", data:{...}}
@@ -23,14 +24,20 @@ import {fileURLToPath} from 'node:url'
 /*
  * 与 src/utils/config.js 保持一致（server 由 node 直接运行，不走 webpack，
  * 无法使用 @ 别名，也不适合 import 前端的 .js ESM 文件，故在此内联）。
- * 直接 node 启动时 NODE_ENV 未设置，回退 development。
+ * 环境指定（优先级从高到低）：node server/index.mjs <env> → NODE_ENV → 缺省 development。
+ * Node 直接启动不会自动设置 NODE_ENV（那是 vue-cli --mode 的行为），所以提供 CLI 参数。
  */
 const BASE_URLS = {
   development: 'http://172.168.34.19:3000',
   test: 'http://122.11.233.165:3000',
   production: 'http://122.11.233.165:3000',
 }
-const BASE_URL = BASE_URLS[process.env.NODE_ENV] || BASE_URLS.development
+const ENV = process.argv[2] || process.env.NODE_ENV || 'development'
+const BASE_URL = BASE_URLS[ENV]
+if (!BASE_URL) {
+  console.error(`未知环境 "${ENV}"，可用：${Object.keys(BASE_URLS).join(' / ')}`)
+  process.exit(1)
+}
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = path.join(ROOT, 'dist')
@@ -206,5 +213,5 @@ const server = createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`listening on ${BASE_URL}`)
+  console.log(`[${ENV}] listening on ${BASE_URL}`)
 })
