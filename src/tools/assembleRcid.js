@@ -149,7 +149,7 @@ export function assembleRcid(parsed, ctx = {}) {
   const rows = k => (S(k) && S(k).layout === 'table' ? S(k).rows : [])
   const content = k => (S(k) && S(k).layout === 'content' ? S(k).content : '')
   const need = (k, why) => {
-    if (!S(k)) warnings.push(`缺少章节 §${k}（${why}），该段数据未更新`)
+    if (!S(k)) warnings.push(`Missing section §${k} (${why}) — this part of the data was not updated`)
     return !!S(k)
   }
 
@@ -167,7 +167,7 @@ export function assembleRcid(parsed, ctx = {}) {
     const r = Math.min(Math.max((reportingDate - start) / (end - start), 0), 1)
     timeElapsedPct = Math.round(r * 100)
   } else if (start && end && end > start) {
-    warnings.push('§1 缺少可用的填报日期，Time Elapsed 无法计算，暂置 0')
+    warnings.push('§1: no valid reporting date — Time Elapsed cannot be calculated, set to 0')
   }
 
   // 主合同的近失累计：RCID 只有各支撑合同各自的「No. of Near Miss Reported」，取合计
@@ -192,13 +192,13 @@ export function assembleRcid(parsed, ctx = {}) {
   ;(baseline.supportContracts || []).forEach(c => { baseByRole[c.role] = c })
 
   const supportContracts = SUPPORT_CONTRACTS.map(def => {
-    need(def.section, `支撑合同 ${def.role}`)
+    need(def.section, `support contract ${def.role}`)
     const raw = kv(def.section)
     const out = {...(baseByRole[def.role] || {role: def.role})}
     const fieldMap = def.map
     Object.entries(fieldMap).forEach(([label, key]) => {
       if (!(label in raw)) {
-        if (S(def.section)) warnings.push(`§${def.section} 缺少字段「${label}」，${def.role} 的 ${key} 保留原值`)
+        if (S(def.section)) warnings.push(`§${def.section}: field "${label}" missing — ${def.role} ${key} keeps its previous value`)
         return
       }
       const v = raw[label]
@@ -232,11 +232,11 @@ export function assembleRcid(parsed, ctx = {}) {
         }
       })
       : []
-  if (!qssSection) warnings.push('缺少 §2.1 QSS 团队表，该段未更新')
+  if (!qssSection) warnings.push('Missing §2.1 QSS team table — this part was not updated')
 
   /* ---------- §8 关键进展 / §9 关注事项 ---------- */
   const achv = content('8')
-  if (!S('8')) warnings.push('缺少 §8 关键进展，该段未更新')
+  if (!S('8')) warnings.push('Missing §8 Key Achievements — this part was not updated')
   const achievementsItems = Array.isArray(achv) ? achv : (achv ? [achv] : [])
 
   const concerns = rows('9').map(r => {
@@ -269,7 +269,7 @@ export function assembleRcid(parsed, ctx = {}) {
       const base = (baseline.progressRisk && baseline.progressRisk.riskZones || [])
           .find(z => z.name === name) || zByLocation[name]
       if (!base || !base.co) {
-        warnings.push(`§12 第 ${r.__row} 行的「${name}」在既有坐标表里找不到，该点未上图（需补 XYZ 坐标）`)
+        warnings.push(`§12 row ${r.__row}: "${name}" is not in the existing coordinate table — not plotted on the map (XYZ coordinates needed)`)
         return
       }
       riskZones.push({
@@ -300,7 +300,7 @@ export function assembleRcid(parsed, ctx = {}) {
     if (!S(secKey)) return segs
     const col = S(secKey).columns.find(c => statusRe.test(c.label))
     if (!col) {
-      warnings.push(`§${secKey} 找不到状态列，索赔计数未统计`)
+      warnings.push(`§${secKey}: status column not found — claim counts not calculated`)
       return segs
     }
     list.forEach(r => { segs[claimBucket(r[col.label])]++ })
@@ -362,7 +362,7 @@ export function assembleRcid(parsed, ctx = {}) {
         : (baseline.cost && baseline.cost.chart && baseline.cost.chart.contractSum) || 0
   }
   if (!isNum(contractSumCell)) {
-    warnings.push('§13.3 未填 Total Contract Sum，造价图基准线沿用上一版数值')
+    warnings.push('§13.3: Total Contract Sum not filled — cost chart baseline keeps the previous version')
   }
 
   // §13.6 WSO EOT
@@ -382,7 +382,7 @@ export function assembleRcid(parsed, ctx = {}) {
   const safetyPoints = []
   SAFETY_CATS.forEach(({section, cat}) => {
     if (!S(section)) {
-      warnings.push(`缺少 §${section}（${cat}），该条安全记录未更新`)
+      warnings.push(`Missing §${section} (${cat}) — this safety record was not updated`)
       return
     }
     const cols = S(section).columns
@@ -393,7 +393,7 @@ export function assembleRcid(parsed, ctx = {}) {
     const base = baseSafetyPoints.find(p => p.cat === cat) ||
         zByLocation[cat]
     if (!base || !base.co) {
-      warnings.push(`§${section}（${cat}）在既有坐标表里找不到对应点位，未上图`)
+      warnings.push(`§${section} (${cat}): no matching point in the existing coordinate table — not plotted on the map`)
       return
     }
     const obj = {co: base.co, cat, desc: ''}

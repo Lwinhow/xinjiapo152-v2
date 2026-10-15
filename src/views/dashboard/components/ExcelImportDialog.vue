@@ -11,26 +11,34 @@
         <div class="ib-row">
           <div class="ib-file" :class="{ picked: !!files.aip }">
             <div class="ib-name">AIP Tracking List</div>
-            <div class="ib-hint">{{ files.aip ? files.aip.name : '选择 DE152 AIP tracking list.xlsx' }}</div>
+            <div class="ib-hint">{{ files.aip ? files.aip.name : 'Select DE152 AIP tracking list.xlsx' }}</div>
             <input type="file" accept=".xlsx,.xls" @change="pick('aip', $event)">
           </div>
           <div class="ib-file" :class="{ picked: !!files.rcid }">
             <div class="ib-name">RCID Data Inputs</div>
-            <div class="ib-hint">{{ files.rcid ? files.rcid.name : '选择 RCID DART - Data Inputs.xlsx' }}</div>
+            <div class="ib-hint">{{ files.rcid ? files.rcid.name : 'Select RCID DART - Data Inputs.xlsx' }}</div>
             <input type="file" accept=".xlsx,.xls" @change="pick('rcid', $event)">
           </div>
         </div>
 
         <div class="ib-row ib-meta">
-          <label>填报月份
-            <input v-model="version" placeholder="2026-11" class="ib-input">
+          <label>Filling Month
+            <el-date-picker
+                v-model="version"
+                type="month"
+                value-format="yyyy-MM"
+                placeholder="Select Month"
+                :append-to-body="true"
+                popper-class="de152-month-popper">
+            </el-date-picker>
+<!--            <input v-model="version" placeholder="2026-11" class="ib-input">-->
           </label>
-          <span class="ib-note">留空则按文件名推断；两份表都要填时才需要手动指定</span>
+<!--          <span class="ib-note">留空则按文件名推断；两份表都要填时才需要手动指定</span>-->
         </div>
 
         <div class="ib-actions">
           <button class="ib-btn primary" :disabled="busy || (!files.aip && !files.rcid)" @click="run">
-            {{ busy ? '解析中…' : '解析并校验' }}
+            {{ busy ? 'Parsing…' : 'Parse & Valid.' }}
           </button>
           <span v-if="error" class="ib-error">{{ error }}</span>
         </div>
@@ -38,13 +46,13 @@
         <!-- 结果 -->
         <div v-if="result" class="ib-result">
           <div class="ib-summary">
-            <span class="ok">版本 {{ result.version }} · {{ result.label }}</span>
-            <span>告警 {{ result.warnings.length }} 条</span>
+            <span class="ok">Version {{ result.version }} · {{ result.label }}</span>
+            <span>{{ result.warnings.length }} warnings</span>
           </div>
 
           <ul v-if="result.warnings.length" class="ib-warn">
             <li v-for="(w, i) in result.warnings.slice(0, 12)" :key="i">{{ w }}</li>
-            <li v-if="result.warnings.length > 12">… 另有 {{ result.warnings.length - 12 }} 条</li>
+            <li v-if="result.warnings.length > 12">… and {{ result.warnings.length - 12 }} more</li>
           </ul>
 
           <div class="ib-counts">
@@ -54,13 +62,13 @@
           </div>
 
           <div class="ib-actions">
-            <button class="ib-btn primary" @click="doUpload">保存并切换</button>
-            <button class="ib-btn" @click="doPreview">仅本机预览</button>
-            <button class="ib-btn" @click="doExport">导出 JSON</button>
+            <button class="ib-btn primary" @click="doUpload">Save & Switch</button>
+            <button class="ib-btn" @click="doPreview">Local Preview</button>
+            <button class="ib-btn" @click="doExport">Export JSON</button>
           </div>
           <div v-if="previewOn" class="ib-preview-note">
-            当前处于本机预览态，仅本浏览器可见
-            <a @click="dropPreview">恢复服务器版本</a>
+            Local preview is active — visible in this browser only
+            <a @click="dropPreview">Restore server version</a>
           </div>
           <div v-if="done" class="ib-success">{{ done }}</div>
         </div>
@@ -96,10 +104,10 @@ export default {
       const d = this.result.doc
       return [
         {k: 'AIP', v: (d.aip && d.aip.list || []).length},
-        {k: '支撑合同', v: (d.supportContracts || []).length},
-        {k: '风险点', v: ((d.progressRisk || {}).riskZones || []).length},
-        {k: '安全点', v: ((d.safety || {}).safetyPoints || []).length},
-        {k: '进度月数', v: (((d.overallProgress || {}).chart || {}).months || []).length}
+        {k: 'Support Contracts', v: (d.supportContracts || []).length},
+        {k: 'Risk Zones', v: ((d.progressRisk || {}).riskZones || []).length},
+        {k: 'Safety Points', v: ((d.safety || {}).safetyPoints || []).length},
+        {k: 'Progress Months', v: (((d.overallProgress || {}).chart || {}).months || []).length}
       ]
     }
   },
@@ -132,12 +140,12 @@ export default {
     doPreview() {
       savePreview(this.result.doc)
       this.previewOn = true
-      this.done = '已存入本机预览'
+      this.done = 'Saved to local preview'
       window.location.reload()
     },
     doExport() {
       downloadJson(this.result.doc)
-      this.done = '已导出，替换服务器上的 public/data/ 对应文件即可发布'
+      this.done = 'Exported. Replace the matching file under public/data/ on the server to publish'
     },
     async doUpload() {
       this.busy = true
@@ -147,7 +155,7 @@ export default {
         // 清掉本机预览，否则刷新后它优先级更高，会盖住刚上传的这一版
         clearPreview()
         this.previewOn = false
-        this.done = `已保存版本 ${this.result.version}，正在切换…`
+        this.done = `Saved version ${this.result.version}, switching…`
         this.$emit('uploaded', this.result.version)
       } catch (e) {
         this.error = e.message
@@ -307,6 +315,35 @@ export default {
   font-size: 12px;
 }
 
+::v-deep .el-date-editor.el-input {
+  width: 150px;
+  margin-left: 6px;
+
+  .el-input__inner {
+    height: 28px;
+    line-height: 28px;
+    background: rgba(6, 30, 56, 0.7);
+    border: 1px solid rgba(90, 170, 230, 0.45);
+    border-radius: 2px;
+    color: #eaf7ff;
+    font-size: 12px;
+
+    &:hover,
+    &:focus {
+      border-color: #3fd2ff;
+    }
+
+    &::placeholder {
+      color: #6fb7e2;
+    }
+  }
+
+  .el-input__icon {
+    line-height: 28px;
+    color: #7fb9e2;
+  }
+}
+
 .ib-actions {
   display: flex;
   align-items: center;
@@ -402,6 +439,79 @@ export default {
     cursor: pointer;
     text-decoration: underline;
     margin-left: 6px;
+  }
+}
+</style>
+
+<!--
+  月份选择器的弹出面板由 Element 挂到 <body> 下（append-to-body），不在本组件的
+  scoped 作用域里，必须用非 scoped 样式 + popper-class（de152-month-popper）才能命中。
+  配色取自大屏：深蓝底 rgba(4,30,58)、青色高亮 #3fd2ff，选中态同 TopBar 激活按钮。
+-->
+<style lang="scss">
+.de152-month-popper {
+  background: rgba(4, 30, 58, 0.96);
+  border: 1px solid rgba(0, 200, 255, 0.45);
+  box-shadow: 0 0 24px rgba(0, 200, 255, 0.35);
+  border-radius: 6px;
+
+  &.el-popper[x-placement^='bottom'] .popper__arrow {
+    border-bottom-color: rgba(0, 200, 255, 0.45);
+
+    &::after {
+      border-bottom-color: rgba(4, 30, 58, 0.96);
+    }
+  }
+
+  &.el-popper[x-placement^='top'] .popper__arrow {
+    border-top-color: rgba(0, 200, 255, 0.45);
+
+    &::after {
+      border-top-color: rgba(4, 30, 58, 0.96);
+    }
+  }
+
+  .el-date-picker__header {
+    .el-date-picker__header-label {
+      color: #7fe6ff;
+
+      &:hover {
+        color: #3fd2ff;
+      }
+    }
+
+    .el-picker-panel__icon-btn {
+      color: #7fb9e2;
+
+      &:hover {
+        color: #3fd2ff;
+      }
+    }
+  }
+
+  .el-month-table,
+  .el-year-table {
+    td .cell {
+      color: #cfe8ff;
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba(14, 154, 216, 0.28);
+        color: #eaf7ff;
+      }
+    }
+
+    td.current:not(.disabled) .cell {
+      background: linear-gradient(180deg, #3fd2ff, #0e9ad8);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    td.disabled .cell {
+      color: #4a6a8a;
+      background: none;
+      cursor: not-allowed;
+    }
   }
 }
 </style>

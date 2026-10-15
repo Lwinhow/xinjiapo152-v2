@@ -14,7 +14,7 @@ function readFile(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader()
     r.onload = () => resolve(r.result)
-    r.onerror = () => reject(new Error(`读取失败：${file.name}`))
+    r.onerror = () => reject(new Error(`Failed to read: ${file.name}`))
     r.readAsArrayBuffer(file)
   })
 }
@@ -39,8 +39,8 @@ function monthEnd(version) {
  */
 export async function buildDocFromFiles(input) {
   const {aip, rcid, baseline} = input
-  if (!aip && !rcid) throw new Error('请至少选择一份 Excel')
-  if (!baseline) throw new Error('缺少基线数据，无法合并')
+  if (!aip && !rcid) throw new Error('Select at least one Excel file')
+  if (!baseline) throw new Error('Missing baseline data, cannot merge')
 
   let version = input.version || ''
 
@@ -54,7 +54,7 @@ export async function buildDocFromFiles(input) {
     }
   }
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(version)) {
-    throw new Error('无法确定填报月份，请手动填写，格式如 2026-11')
+    throw new Error('Cannot determine the reporting month — fill in Filling Month manually, e.g. 2026-11')
   }
 
   const doc = JSON.parse(JSON.stringify(baseline))

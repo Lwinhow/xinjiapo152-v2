@@ -35,6 +35,17 @@ function sectionKey(intPart, decPart) {
 /** 折叠空白，供标签比对 */
 const norm = s => String(s == null ? '' : s).replace(/[ 　]/g, ' ').replace(/\s+/g, ' ').trim()
 
+function indexToCol(i) {
+  let s = ''
+  i += 1
+  while (i > 0) {
+    const r = (i - 1) % 26
+    s = String.fromCharCode(65 + r) + s
+    i = Math.floor((i - 1) / 26)
+  }
+  return s
+}
+
 /** 单元格显示文本 */
 function textOf(cell) {
   if (!cell) return ''
@@ -207,7 +218,7 @@ export function parseRcidSheet(sheet, XLSX, opts = {}) {
     titles.push(c)
   })
 
-  if (!titles.length) warnings.push('未识别到任何章节标题')
+  if (!titles.length) warnings.push('No section titles recognized')
 
   /* ---- 2. 逐章节切分 ---- */
   const sections = {}
@@ -261,7 +272,7 @@ export function parseRcidSheet(sheet, XLSX, opts = {}) {
         if (!label) continue
         const vals = valuesOfRow(r)
         if (vals.length > 1) {
-          warnings.push(`§${t.key}「${label.slice(0, 30)}」填了 ${vals.length} 个值区（第 ${vals.map(v => indexToCol(v.col)).join('、')} 列），已取第一个`)
+          warnings.push(`§${t.key} "${label.slice(0, 30)}" fills ${vals.length} value ranges (columns ${vals.map(v => indexToCol(v.col)).join(', ')}), using the first one`)
         }
         kv[label] = vals.length ? vals[0].v : ''
         ordered.push(label)
@@ -305,8 +316,8 @@ export function parseRcidSheet(sheet, XLSX, opts = {}) {
         obj[col.label] = valueOf(raw)
         // 归一化改了数，必须让填报人看见，不能静默
         if (isPctFraction(raw)) {
-          warnings.push(`§${t.key} 第 ${r + 1} 行「${col.label}」填的是 ${raw.v}`
-              + `（该列是百分比格式，Excel 里显示为 ${obj[col.label]}%），已按 ${obj[col.label]}% 采用`)
+          warnings.push(`§${t.key} row ${r + 1} "${col.label}" contains ${raw.v}`
+              + ` (this column is percentage-formatted, shown as ${obj[col.label]}% in Excel) — adopted as ${obj[col.label]}%`)
         }
       })
       // 模板自带的示例行（首列以 eg. / e.g. 开头）不是填报数据
@@ -316,7 +327,7 @@ export function parseRcidSheet(sheet, XLSX, opts = {}) {
         // 漏删了 A 列的示例文字。静默丢弃会丢数据，必须提示。
         const filledOther = columns.slice(1).some(c => String(obj[c.label] || '').trim() !== '')
         if (filledOther && IN_SCOPE.has(t.key)) {
-          warnings.push(`§${t.key} 第 ${r + 1} 行首列仍是示例文字（「${first.slice(0, 24)}」）但其他列已填报，该行已跳过 —— 请删除示例文字`)
+          warnings.push(`§${t.key} row ${r + 1}: the first column still holds the template example ("${first.slice(0, 24)}") while other columns are filled — row skipped, please remove the example text`)
         }
         continue
       }

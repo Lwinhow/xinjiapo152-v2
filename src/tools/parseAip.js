@@ -126,17 +126,17 @@ export function parseAip(sheet, XLSX) {
       for (let c = g.c0; c <= g.c1; c++) if (norm(textOf(cell(SUBHEADER_ROW, c)))) return true
       return false
     })()
-    if (hasSub) warnings.push(`第 ${indexToCol(g.c0)} 列的轮次分组缺组名但填了子列名，已跳过`)
+    if (hasSub) warnings.push(`Rev group at column ${indexToCol(g.c0)} has no group name but its sub-columns are labeled — skipped`)
   })
 
-  if (!groups.length) warnings.push('第3行未找到任何带名称的轮次分组（合并单元格）')
+  if (!groups.length) warnings.push('No named rev groups (merged cells) found on row 3')
 
   /* ---- 固定列 A..D ---- */
   const fixedByKey = {}
   FIXED_FIELDS.forEach((f, i) => {
     const label = norm(textOf(cell(HEADER_ROW, i)))
     if (label && !f.re.test(label)) {
-      warnings.push(`固定列第 ${i + 1} 列表头为「${label}」，期望匹配 ${f.re}`)
+      warnings.push(`Fixed column ${i + 1} header is "${label}", expected to match ${f.re}`)
     }
     fixedByKey[f.key] = i
   })
@@ -149,17 +149,17 @@ export function parseAip(sheet, XLSX) {
       const idx = c - g.c0
       const spec = REV_FIELDS[idx]
       if (!spec) {
-        warnings.push(`轮次「${g.label}」第 ${idx + 1} 列（${indexToCol(c)}）超出预期的 8 个字段，标签「${label}」`)
+        warnings.push(`Rev "${g.label}" column ${idx + 1} (${indexToCol(c)}) exceeds the expected 8 fields, label "${label}"`)
         cols.push({key: null, c, label})
         continue
       }
       if (label && !spec.re.test(label)) {
-        warnings.push(`轮次「${g.label}」第 ${idx + 1} 列（${indexToCol(c)}）标签为「${label}」，期望 ${spec.key}`)
+        warnings.push(`Rev "${g.label}" column ${idx + 1} (${indexToCol(c)}) label is "${label}", expected ${spec.key}`)
       }
       cols.push({key: spec.key, c, label})
     }
     if (cols.length !== REV_FIELDS.length) {
-      warnings.push(`轮次「${g.label}」有 ${cols.length} 个子列，预期 ${REV_FIELDS.length} 个`)
+      warnings.push(`Rev "${g.label}" has ${cols.length} sub-columns, expected ${REV_FIELDS.length}`)
     }
     return {name: g.rev, rawLabel: g.label, cols}
   })
@@ -195,7 +195,7 @@ export function parseAip(sheet, XLSX) {
     list.push(row)
   }
 
-  if (!list.length) warnings.push('未解析到任何数据行')
+  if (!list.length) warnings.push('No data rows parsed')
 
   return {
     data: {
