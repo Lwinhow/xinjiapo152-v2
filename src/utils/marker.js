@@ -12,8 +12,8 @@
  * Z 沿用既有硬编码值（见 tools/ 里的 zByLocation 映射表）。
  */
 import {db} from '@/data/store'
-
-const path = window.location.origin
+import config from '@/utils/config.js';
+const path = config[process.env.NODE_ENV].bimUrl
 
 const riskColorMap = {
     'On Track': '#099100',
