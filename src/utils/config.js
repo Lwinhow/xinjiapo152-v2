@@ -8,19 +8,22 @@ PS: --mode只能指定如上三种环境变量值
 export default {
 	development: {//开发环境
 		//baseUrl: '/tyl', //接口路径  走反向代理
-		baseUrl:"https://dev-partybuilding.tylin.com.cn/partybuilding",//接口路径
+		baseUrl:"http://172.168.34.19:3000",//接口路径
 		// playerPath: "127.0.0.1:8080",
-		playerPath: "172.168.34.24:8080",
+		playerPath: "172.168.34.19:8080",
 		playerExampleId: '2462623268777',
+		bimUrl:window.location.origin,
 	},
 	test: {// 测试环境
-		baseUrl:"https://test-partybuilding.tylin.com.cn/partybuilding",
-		playerPath: "127.0.0.1:8080",
+		baseUrl:'http://122.11.233.165:3000',
+		playerPath: "122.11.233.165:8080",
 		playerExampleId: '2462623268777',
+		bimUrl:'@path:',
 	},
 	production: {// 生产环境
-		baseUrl:"https://ies-partybuilding.tylin.com.cn/partybuilding",
-		playerPath: "127.0.0.1:8080",
+		baseUrl:'http://122.11.233.165:3000',
+		playerPath: "122.11.233.165:8080",
 		playerExampleId: '2462623268777',
+		bimUrl:'@path:',
 	}
 }

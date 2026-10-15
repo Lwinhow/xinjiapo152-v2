@@ -20,6 +20,18 @@ import {existsSync} from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
+/*
+ * 与 src/utils/config.js 保持一致（server 由 node 直接运行，不走 webpack，
+ * 无法使用 @ 别名，也不适合 import 前端的 .js ESM 文件，故在此内联）。
+ * 直接 node 启动时 NODE_ENV 未设置，回退 development。
+ */
+const BASE_URLS = {
+  development: 'http://172.168.34.19:3000',
+  test: 'http://122.11.233.165:3000',
+  production: 'http://122.11.233.165:3000',
+}
+const BASE_URL = BASE_URLS[process.env.NODE_ENV] || BASE_URLS.development
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = path.join(ROOT, 'dist')
 
@@ -164,7 +176,7 @@ async function serveStatic(res, base, relPath, immutable) {
 }
 
 const server = createServer(async (req, res) => {
-  const {pathname} = new URL(req.url, 'http://localhost')
+  const {pathname} = new URL(req.url, BASE_URL)
 
   if (pathname === '/api/versions' && req.method === 'POST') {
     try {
@@ -194,8 +206,5 @@ const server = createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`listening on http://127.0.0.1:${PORT}`)
-  console.log(`  dist : ${DIST}`)
-  console.log(`  data : ${DATA}`)
-  console.log('  ⚠ POST /api/versions 不鉴权，任何能访问本端口的人都能改写版本数据')
+  console.log(`listening on ${BASE_URL}`)
 })
