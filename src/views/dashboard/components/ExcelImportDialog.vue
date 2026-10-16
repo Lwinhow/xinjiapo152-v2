@@ -364,7 +364,7 @@ export default {
   cursor: pointer;
   font-size: 12px;
 
-  a& {
+  a {
     display: inline-flex;
     align-items: center;
     text-decoration: none;
