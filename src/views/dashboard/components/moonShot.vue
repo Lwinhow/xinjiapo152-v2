@@ -39,8 +39,8 @@
           <div title="Save to Server?">
             <el-switch
                 v-model="isSave"
-                active-color="#13ce66"
-                inactive-color="#ff4949">
+                active-color="#2eff9d"
+                inactive-color="#39597a">
             </el-switch>
           </div>
           <div title="Clear Current Chat Records">
@@ -179,45 +179,39 @@ export default {
       chatFiles: [],
       selectedFiles: [],
 
-      //已完成的配置
+      //已完成的配置 —— 配色与大屏深蓝+青色主题一致
       colorConfig: {
         headBg: {
-          background: '#DBE1E7'
+          background: 'rgba(4, 30, 58, 0.98)'
         },
         headTitle: {
-          color: '#fff'
+          color: '#eaf7ff'
         },
         bodyBg: {
-          background: '#F7F3F3'
+          background: 'rgba(4, 34, 64, 0.98)'
         },
         bottomBg: {
-          background: '#fff'
+          background: 'rgba(6, 34, 66, 0.98)'
         },
         message: {
           my: {
             name: {
-              color: '#bdb8b8'
+              color: '#8fc6ea'
             },
             content: {
-              background: '#fff',
-              color: '#bdb8b8'
+              background: 'linear-gradient(180deg, #3fd2ff, #0e9ad8)',
+              color: '#ffffff'
             }
           },
           ai: {
             name: {
-              color: '#fff'
+              color: '#8fc6ea'
             },
             content: {
-              background: '#fb4141',
-              color: '#fff'
+              background: 'rgba(10, 60, 110, 0.9)',
+              color: '#eaf7ff'
             }
           },
-        },
-        submitIcon: {
-          fill: '#B91010'
-        },
-        submitImageIcon: {
-          fill: '#B91010'
         },
       },
       scrollBottom: {
@@ -300,6 +294,7 @@ export default {
       return [
         'You are the AI assistant embedded in the DE152 DART project command dashboard.',
         'Answer questions about this construction project strictly based on the dashboard data provided below.',
+        'The project is located in Singapore. References shall be subject to local laws, regulations, work codes and requirements.',
         'If something is not in the data, say you cannot find it instead of guessing.',
         `Current dashboard version: ${doc.meta && doc.meta.version || '-'} (${doc.meta && doc.meta.label || '-'})`,
         `Other versions available on the server: ${versions || 'none'} — their data is NOT loaded; tell the user to switch versions in the top bar to inspect them.`,
@@ -513,7 +508,9 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #f5f1f1;
+  background-color: #041e3a;
+  border: 1px solid rgba(0, 200, 255, 0.35);
+  box-shadow: 0 0 24px rgba(0, 200, 255, 0.25);
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -530,8 +527,9 @@ export default {
     padding: 0 10px 0 10px;
     -webkit-box-align: center;
     align-items: center;
-    box-shadow: 0 2px 20px 2px rgba(90, 90, 90, .40);
-    background: #DBE1E7;
+    box-shadow: 0 2px 20px 2px rgba(0, 80, 160, 0.35);
+    background: rgba(4, 30, 58, 0.98);
+    border-bottom: 1px solid rgba(0, 200, 255, 0.3);
 
     .moon-title {
       padding: 10px;
@@ -540,12 +538,12 @@ export default {
       text-align: left;
 
       .title-text {
-        color: #000;
+        color: #eaf7ff;
         margin-bottom: 0;
       }
 
       .name-text {
-        color: rgb(142, 142, 142);
+        color: #8fc6ea;
         font-size: 12px;
         margin-top: 5px;
         max-height: 30px;
@@ -556,6 +554,7 @@ export default {
     .moon-config {
       display: flex;
       gap: 5px;
+      align-items: center;
 
       div {
         width: 50px;
@@ -563,14 +562,24 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        color: #84878b;
+        color: #8fc6ea;
         text-decoration: none;
         font-size: 20px;
         cursor: pointer;
 
         &:hover {
-          background-color: rgb(196, 202, 207);
-          color: #000;
+          background-color: rgba(14, 154, 216, 0.28);
+          color: #eaf7ff;
+        }
+      }
+
+      ::v-deep .el-input__inner {
+        background: rgba(4, 34, 64, 0.97);
+        border-color: rgba(63, 210, 255, 0.35);
+        color: #eaf7ff;
+
+        &::placeholder {
+          color: #6fb7e2;
         }
       }
     }
@@ -587,7 +596,7 @@ export default {
     flex-direction: column;
     padding-bottom: 20px;
     height: calc(100% - 155px);
-    background: #F7F3F3;
+    background: rgba(4, 34, 64, 0.98);
 
     .message-box {
       display: flex;
@@ -625,8 +634,8 @@ export default {
             white-space: pre-wrap;
             border-radius: 15px 15px 0 15px;
             word-break: break-word;
-            background: rgb(255, 255, 255);
-            color: rgb(189, 184, 184);
+            background: linear-gradient(180deg, #3fd2ff, #0e9ad8);
+            color: #ffffff;
 
             p {
               margin: 5px 0 5px 0;
@@ -646,7 +655,7 @@ export default {
             overflow-wrap: break-word;
             text-align: left;
             font-size: 10px;
-            color: #bdb8b8;
+            color: #6fb7e2;
             width: 100%;
             display: flex;
             -webkit-box-align: center;
@@ -703,8 +712,8 @@ export default {
             white-space: pre-wrap;
             border-radius: 15px 15px 15px 0;
             word-break: break-word;
-            background: rgb(251, 65, 65);
-            color: rgb(255, 255, 255);
+            background: rgba(10, 60, 110, 0.9);
+            color: #eaf7ff;
 
             p {
               margin: 5px 0 5px 0;
@@ -724,7 +733,7 @@ export default {
             overflow-wrap: break-word;
             text-align: left;
             font-size: 10px;
-            color: #bdb8b8;
+            color: #6fb7e2;
             width: 100%;
             display: flex;
             -webkit-box-align: center;
@@ -742,12 +751,13 @@ export default {
     bottom: 1px;
     height: 65px;
     width: 100%;
-    background: #fff;
+    background: rgba(6, 34, 66, 0.98);
+    border-top: 1px solid rgba(0, 200, 255, 0.25);
     display: flex;
     -webkit-box-align: center;
     align-items: center;
     padding: 0 5px 0 20px;
-    box-shadow: 0 -2px 40px 0 hsla(0, 0%, 72.9%, .67);
+    box-shadow: 0 -2px 24px rgba(0, 200, 255, 0.12);
 
     .message-input {
       padding: 0 10px 0 10px;
@@ -758,7 +768,7 @@ export default {
       .input-box {
         width: 100%;
         resize: none;
-        border: none;
+        border: 1px solid rgba(63, 210, 255, 0.35);
         outline: none;
         box-sizing: border-box;
         font-size: 15px;
@@ -766,7 +776,7 @@ export default {
         line-height: 1.33;
         white-space: pre-wrap;
         word-wrap: break-word;
-        color: #3c3c3c;
+        color: #eaf7ff;
         -webkit-font-smoothing: antialiased;
         height: 50px;
         overflow: scroll;
@@ -775,13 +785,17 @@ export default {
         text-align: left;
         cursor: text;
         display: inline-block;
-        background-color: #ededed;
-        border-radius: 10px;
-        padding: 5px;
+        background-color: rgba(4, 34, 64, 0.97);
+        border-radius: 6px;
+        padding: 5px 8px;
+
+        &:focus {
+          border-color: #3fd2ff;
+        }
 
         &:empty:before {
           content: attr(placeholder);
-          color: #bbb;
+          color: #6fb7e2;
         }
 
         &:focus:before {
@@ -796,7 +810,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #84878b;
+      color: #8fc6ea;
       text-decoration: none;
       font-size: 20px;
       cursor: pointer;
@@ -805,9 +819,18 @@ export default {
       border-radius: 11px;
 
       &:hover {
-        background-color: #ececec;
+        background-color: rgba(14, 154, 216, 0.28);
         opacity: 1;
       }
+    }
+  }
+
+  ::v-deep .el-button--primary {
+    background: linear-gradient(180deg, #3fd2ff, #0e9ad8);
+    border: none;
+
+    &:hover, &:focus {
+      background: linear-gradient(180deg, #5bdaff, #17a7e6);
     }
   }
 }
@@ -822,7 +845,7 @@ export default {
   .ba-btn {
     cursor: pointer;
     font-size: 13px;
-    color: #909399;
+    color: #6fb7e2;
 
     &:hover {
       color: #3fd2ff;
@@ -839,17 +862,17 @@ export default {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(255, 255, 255, 0.06);
   /* 背景颜色 */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a9a8a8;
+  background: rgba(63, 210, 255, 0.35);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #645858;
+  background: rgba(63, 210, 255, 0.7);
 }
 </style>
 
@@ -982,8 +1005,14 @@ export default {
   padding: 4px 0;
 }
 
-.chat-files-panel .el-button {
+.chat-files-panel .el-button--primary {
   margin-top: 8px;
   float: right;
+  background: linear-gradient(180deg, #3fd2ff, #0e9ad8);
+  border: none;
+
+  &:hover, &:focus {
+    background: linear-gradient(180deg, #5bdaff, #17a7e6);
+  }
 }
 </style>
