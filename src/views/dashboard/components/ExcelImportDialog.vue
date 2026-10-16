@@ -31,15 +31,15 @@
                 :append-to-body="true"
                 popper-class="de152-month-popper">
             </el-date-picker>
-<!--            <input v-model="version" placeholder="2026-11" class="ib-input">-->
           </label>
-<!--          <span class="ib-note">留空则按文件名推断；两份表都要填时才需要手动指定</span>-->
         </div>
 
         <div class="ib-actions">
           <button class="ib-btn primary" :disabled="busy || (!files.aip && !files.rcid)" @click="run">
             {{ busy ? 'Parsing…' : 'Parse & Valid.' }}
           </button>
+          <a class="ib-btn" :href="tplUrl('template-DE152 AIP tracking list.xlsx')" download>Download AIP Template</a>
+          <a class="ib-btn" :href="tplUrl('template-RCID DART - Data Inputs.xlsx')" download>Download RCID Template</a>
           <span v-if="error" class="ib-error">{{ error }}</span>
         </div>
 
@@ -117,6 +117,9 @@ export default {
       this.result = null
       this.done = ''
       this.error = ''
+    },
+    tplUrl(name) {
+      return encodeURI(process.env.BASE_URL + name)
     },
     async run() {
       this.busy = true
@@ -360,6 +363,12 @@ export default {
   padding: 5px 14px;
   cursor: pointer;
   font-size: 12px;
+
+  a& {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
 
   &.primary {
     background: rgba(14, 154, 216, 0.85);

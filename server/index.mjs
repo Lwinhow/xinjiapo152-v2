@@ -151,8 +151,16 @@ async function handleUpload(req, res) {
  *   必须每次回源校验 —— 否则同一个版本号重新导入后，浏览器一年内都吃旧副本。
  */
 async function serveStatic(res, base, relPath, immutable) {
-  // 归一化后必须仍在 base 内
-  const full = path.resolve(base, '.' + path.posix.normalize('/' + relPath))
+  // 浏览器把空格等编码为 %20，先解码再定位文件；畸形编码按 400 拒绝
+  let rel = relPath
+  try {
+    rel = decodeURIComponent(relPath)
+  } catch {
+    res.writeHead(400).end('Bad Request')
+    return
+  }
+  // 归一化后必须仍在 base 内（解码产生的 ../ 也会被这一步拦住）
+  const full = path.resolve(base, '.' + path.posix.normalize('/' + rel))
   if (!full.startsWith(base + path.sep) && full !== base) {
     res.writeHead(403).end('Forbidden')
     return
