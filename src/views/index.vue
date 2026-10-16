@@ -22,6 +22,10 @@
         <span class="tt-v" :style="r.hl ? { color: '#3fd2ff' } : null">{{ r.v }}</span>
       </div>
     </div>
+    <div class='robotButton' @click="showAiChat = !showAiChat">
+      <div class="text">AI Chat</div>
+    </div>
+    <chat-ai @closeChat="showAiChat=false" v-if="showAiChat"></chat-ai>
   </div>
 </template>
 
@@ -35,10 +39,12 @@ import MonitorVideoDialog from "./dashboard/components/MonitorVideoDialog.vue";
 import {requestMarkers, notifyEngineReady, notifyDataReady, setScaleCo} from "@/utils/marker";
 import DescDetailDialog from "@/views/dashboard/components/DescDetailDialog.vue";
 import {db, loadVersion} from "@/data/store";
+import ChatAi from "@/views/dashboard/components/moonShot.vue";
 
 export default {
   name: "index",
   components: {
+    ChatAi,
     DescDetailDialog,
     TopBar,
     LeftPanels,
@@ -58,7 +64,8 @@ export default {
       descDialog: {show: false, title: '', desc: ''},
       monitorDialog: {show: false, info: {}},
       flashNode: null,
-      flashTimer: null
+      flashTimer: null,
+      showAiChat: true,
     };
   },
   async created() {
@@ -247,7 +254,7 @@ export default {
         // 引擎就绪。若数据尚未到达，requestMarkers 只暂存，等 notifyDataReady 补齐
         notifyEngineReady()
         requestMarkers(this.currentTab())
-        __g.camera.set([-1307502.429766,151466.012734,923.030703,-46.500324,-94.496506,-0.000002],3)
+        __g.camera.set([-1307502.429766, 151466.012734, 923.030703, -46.500324, -94.496506, -0.000002], 3)
       };
 
       let _onEvent = async (event) => {
@@ -441,6 +448,29 @@ td.search-highlight {
   }
   100% {
     background-color: rgba(46, 255, 157, 0);
+  }
+}
+
+.robotButton {
+  position: fixed;
+  right: 430px;
+  top: 100px;
+  z-index: 6;
+  width: 100px;
+  height: 100px;
+  background: url('@/assets/images/screen-menu-btn3.png') 0 0 no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  transition: all 2s;
+
+  .text {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    bottom: 10px;
   }
 }
 </style>
