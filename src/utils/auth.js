@@ -9,6 +9,7 @@ export const ACCOUNTS = [
 ]
 
 const SESSION_KEY = 'de152_auth'
+const USER_KEY = 'de152_user'
 
 export function isLoggedIn() {
   return sessionStorage.getItem(SESSION_KEY) === '1'
@@ -16,10 +17,19 @@ export function isLoggedIn() {
 
 export function login(username, password) {
   const ok = ACCOUNTS.some(a => a.username === username && a.password === password)
-  if (ok) sessionStorage.setItem(SESSION_KEY, '1')
+  if (ok) {
+    sessionStorage.setItem(SESSION_KEY, '1')
+    sessionStorage.setItem(USER_KEY, username)
+  }
   return ok
+}
+
+/** 当前登录用户名；未登录返回空串。聊天日志文件名用它区分用户 */
+export function currentUser() {
+  return sessionStorage.getItem(USER_KEY) || ''
 }
 
 export function logout() {
   sessionStorage.removeItem(SESSION_KEY)
+  sessionStorage.removeItem(USER_KEY)
 }

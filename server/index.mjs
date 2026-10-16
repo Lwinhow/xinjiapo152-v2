@@ -10,13 +10,18 @@
  *
  * 写入：
  *   POST /api/versions   {version:"2026-11", label:"...", source:"...", data:{...}}
+ *   POST /api/chat-log   {user, assistant, model, version, username}
+ *                        → 追加写入 public/chat/chat-YYYY-MM-DD-<username>.txt（按天+用户分文件）
+ * 查询：
+ *   GET  /api/chat-log/list?username=...      → 该用户的日志文件列表
+ *   GET  /api/chat-log/download?file=...&username=...  → 下载某个日志文件
  *
  * ⚠ 写入接口不鉴权。这是现场运维用的内部入口（前端也要 ?import=1 才露出按钮），
  *   前提是本服务只在内部网络可达。若要暴露到更大范围，必须在反向代理层加访问控制 ——
  *   或者在这里重新加回一个口令校验，别只靠端口不被发现。
  */
 import {createServer} from 'node:http'
-import {readFile, writeFile, rename, mkdir} from 'node:fs/promises'
+import {readFile, writeFile, rename, mkdir, appendFile, readdir} from 'node:fs/promises'
 import {existsSync} from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -41,6 +46,7 @@ if (!BASE_URL) {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = path.join(ROOT, 'dist')
+const CHAT_DIR = path.join(ROOT, 'public', 'chat')
 
 /*
  * 版本数据统一放 public/data —— dev/prod 共用一条路径：
@@ -190,8 +196,93 @@ async function serveStatic(res, base, relPath, immutable) {
   }
 }
 
+/** 文件名安全：只留字母数字下划线连字符，防路径注入 */
+const safeName = s => String(s || '').replace(/[^\w-]/g, '').slice(0, 40)
+
+/** AI 对话留痕：每轮追加到 public/chat/chat-YYYY-MM-DD-<user>.txt，按天+用户分文件 */
+async function handleChatLog(req, res) {
+  let payload
+  try {
+    payload = JSON.parse((await readBody(req)).toString('utf8'))
+  } catch (e) {
+    return json(res, 400, {error: 'Invalid JSON body: ' + e.message})
+  }
+  const user = String((payload && payload.user) || '').slice(0, 20000)
+  const assistant = String((payload && payload.assistant) || '').slice(0, 20000)
+  const model = String((payload && payload.model) || '')
+  const version = String((payload && payload.version) || '')
+  const username = safeName(payload && payload.username) || 'anonymous'
+  if (!user && !assistant) return json(res, 400, {error: 'empty conversation'})
+
+  const now = new Date()
+  const p = n => String(n).padStart(2, '0')
+  const day = `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`
+  const time = `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`
+  const tags = [
+    version ? `version ${version}` : '',
+    model ? `model ${model}` : ''
+  ].filter(Boolean).join(' | ')
+  const block = `\n──── ${day} ${time}${tags ? `  [${tags}]` : ''} ────\n`
+      + `USER: ${user}\n`
+      + `AI: ${assistant}\n`
+
+  const file = `chat-${day}-${username}.txt`
+  await mkdir(CHAT_DIR, {recursive: true})
+  await appendFile(path.join(CHAT_DIR, file), block, 'utf8')
+  return json(res, 200, {ok: true, file: `public/chat/${file}`})
+}
+
+/** 列出某用户的对话日志文件（文件名按天命名，倒序） */
+function handleChatLogList(req, res) {
+  const username = safeName(new URL(req.url, BASE_URL).searchParams.get('username')) || 'anonymous'
+  return readdir(CHAT_DIR).catch(() => []).then(files => {
+    const list = files
+        .filter(f => new RegExp(`^chat-\\d{4}-\\d{2}-\\d{2}-${username}\\.txt$`).test(f))
+        .sort()
+        .reverse()
+    return json(res, 200, {files: list})
+  })
+}
+
+/** 下载某用户的某个对话日志文件；file 必须匹配该用户名，杜绝越权与路径穿越 */
+async function handleChatLogDownload(req, res) {
+  const params = new URL(req.url, BASE_URL).searchParams
+  const username = safeName(params.get('username')) || 'anonymous'
+  const file = String(params.get('file') || '')
+  if (!new RegExp(`^chat-\\d{4}-\\d{2}-\\d{2}-${username}\\.txt$`).test(file)) {
+    return json(res, 400, {error: 'invalid file name'})
+  }
+  const full = path.join(CHAT_DIR, file)
+  try {
+    const buf = await readFile(full)
+    res.writeHead(200, {
+      'content-type': 'text/plain; charset=utf-8',
+      'content-disposition': `attachment; filename="${file}"`
+    })
+    res.end(buf)
+  } catch {
+    res.writeHead(404).end('Not Found')
+  }
+}
+
 const server = createServer(async (req, res) => {
   const {pathname} = new URL(req.url, BASE_URL)
+
+  if (pathname === '/api/chat-log' && req.method === 'POST') {
+    try {
+      return await handleChatLog(req, res)
+    } catch (e) {
+      return json(res, 500, {error: e.message})
+    }
+  }
+
+  if (pathname === '/api/chat-log/list' && req.method === 'GET') {
+    return handleChatLogList(req, res)
+  }
+
+  if (pathname === '/api/chat-log/download' && req.method === 'GET') {
+    return handleChatLogDownload(req, res)
+  }
 
   if (pathname === '/api/versions' && req.method === 'POST') {
     try {

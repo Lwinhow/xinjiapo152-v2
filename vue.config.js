@@ -18,6 +18,13 @@ module.exports = defineConfig({
 		},
 	},
 	lintOnSave: false,// 关闭eslint
+	configureWebpack: {
+		// copy-webpack-plugin 会把 public 下所有文件加进 webpack 的监视列表，
+		// server 运行时追加 public/chat/*.txt 会触发整页重编译刷新 —— 排除之
+		watchOptions: {
+			ignored: /node_modules|[\\/]public[\\/]chat[\\/]/
+		}
+	},
 	/* configureWebpack: (config) => {
 		// 定义全局变量
 		config.plugins.push(new webpack.ProvidePlugin({
@@ -26,6 +33,13 @@ module.exports = defineConfig({
 	}, */
 	devServer: {
 		port: 9152,
+		// server 运行时会追加 public/chat/*.txt（AI 对话留痕），
+		// 不排除的话 dev server 监视 public/ 会把它当静态资源变化 → 整页刷新
+		static: {
+			watch: {
+				ignored: ['**/public/chat/**']
+			}
+		},
 		//open: true,// 是否自动打开项目
 		proxy: { // 反向代理配置，解决前端本地跨域问题
 			'/tyl': {

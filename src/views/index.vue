@@ -25,7 +25,7 @@
     <div class='robotButton' @click="showAiChat = !showAiChat">
       <div class="text">AI Chat</div>
     </div>
-    <chat-ai @closeChat="showAiChat=false" v-if="showAiChat"></chat-ai>
+    <chat-ai @closeChat="showAiChat=false" v-show="showAiChat"></chat-ai>
   </div>
 </template>
 

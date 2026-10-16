@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const API_KEY = 'sk-u9kYqNZMU58clB1EH0Srn1W0wW3i0AtvUgS0sI0hmzrzvwM5';
-const API_URL = 'https://api.moonshot.cn/v1';
+const API_KEY = 'sk-8612078ad58d44308d3a64abbf73f40e';  // 填入 DeepSeek key：https://platform.deepseek.com/api_keys
+const API_URL = 'https://api.deepseek.com/v1';
 
 const apiClient = axios.create({
     baseURL: API_URL,
