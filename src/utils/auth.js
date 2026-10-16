@@ -14,3 +14,7 @@ export function login(username, password) {
   if (ok) sessionStorage.setItem(SESSION_KEY, '1')
   return ok
 }
+
+export function logout() {
+  sessionStorage.removeItem(SESSION_KEY)
+}

@@ -25,14 +25,23 @@
       </div>
     </div>
     <div class="import-entry" @click="$emit('import')">IMPORT EXCEL</div>
-<!--    <div v-if="showImport" class="import-entry" @click="$emit('import')">IMPORT EXCEL</div>-->
+    <div class="topbar-left">
+      <search-box/>
+    </div>
+    <!--    <div v-if="showImport" class="import-entry" @click="$emit('import')">IMPORT EXCEL</div>-->
     <div v-if="db.isPreview" class="preview-flag">PREVIEW</div>
     <div class="topbar-right">
-      <search-box/>
       <div id="clock">
         <div class="t">{{ timeStr }}</div>
         <div class="d">{{ dateStr }}</div>
       </div>
+    </div>
+    <div class="head-panle-btn">
+      <img alt="" class="imgButton" src="@/assets/images/icon12.png" title="Refresh" @click="refreshClick"/>
+      <div class="obliqueLine"></div>
+      <img alt="" class="imgButton" src="@/assets/images/icon11.png" title="HeadTitle" @click="clickHeadTitle"/>
+      <div class="obliqueLine"></div>
+      <img alt="" class="imgButton2" src="@/assets/images/icon133.png" title="LogOut" @click="logOut"/>
     </div>
   </div>
 </template>
@@ -40,6 +49,7 @@
 <script>
 import {requestMarkers} from "@/utils/marker";
 import {db, loadVersion} from "@/data/store";
+import {logout} from "@/utils/auth";
 import SearchBox from "./SearchBox.vue";
 
 export default {
@@ -60,7 +70,9 @@ export default {
     }
   },
   computed: {
-    versions() { return this.db.versions || [] },
+    versions() {
+      return this.db.versions || []
+    },
     // 版本身份以清单为准，与下拉里列的用同一个 label；
     // 文件自带的 meta.label 只在清单没写 label 时兜底
     reportMonth() {
@@ -80,6 +92,16 @@ export default {
     document.removeEventListener('click', this.closeVersions)
   },
   methods: {
+    refreshClick() { // 刷新
+      location.reload();
+    },
+    clickHeadTitle() {
+      __g.camera.set([-1307502.429766,151466.012734,923.030703,-46.500324,-94.496506,-0.000002],3)
+    },
+    logOut() {// 退出登录：清 session 后整页刷新，路由守卫会弹回登录页
+      logout()
+      location.reload()
+    },
     tick() {
       const n = new Date()
       const p = x => String(x).padStart(2, '0')
@@ -116,7 +138,7 @@ export default {
 <style lang="scss" scoped>
 .import-entry {
   position: absolute;
-  left: 210px;
+  left: 180px;
   top: 26px;
   padding: 5px 12px;
   font-size: 12px;
@@ -308,6 +330,16 @@ export default {
   }
 }
 
+.topbar-left {
+  position: absolute;
+  left: 340px;
+  top: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 60px;
+  z-index: 31;
+}
+
 .topbar-right {
   position: absolute;
   right: 20px;
@@ -333,6 +365,36 @@ export default {
     color: #6fb7e2;
     letter-spacing: 1px;
     margin-top: 2px;
+  }
+}
+
+.head-panle-btn {
+  position: absolute;
+  right: 160px;
+  top: 20px;
+  display: flex;
+  align-items: center;
+  z-index: 40;
+  gap: 10px;
+
+  .obliqueLine {
+    width: 2px;
+    height: 25px;
+    background: #0F6ED6;
+    margin: 0 var(--px20);
+    transform: rotate(-15deg);
+  }
+
+  .imgButton {
+    width: 30px;
+    //height:50px;
+    cursor: pointer;
+  }
+
+  .imgButton2 {
+    width: 25px;
+    //height:50px;
+    cursor: pointer;
   }
 }
 </style>

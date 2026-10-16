@@ -247,6 +247,7 @@ export default {
         // 引擎就绪。若数据尚未到达，requestMarkers 只暂存，等 notifyDataReady 补齐
         notifyEngineReady()
         requestMarkers(this.currentTab())
+        __g.camera.set([-1307502.429766,151466.012734,923.030703,-46.500324,-94.496506,-0.000002],3)
       };
 
       let _onEvent = async (event) => {

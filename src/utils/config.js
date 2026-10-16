@@ -10,7 +10,7 @@ export default {
 		//baseUrl: '/tyl', //接口路径  走反向代理
 		baseUrl:"http://172.168.34.19:3000",//接口路径
 		// playerPath: "127.0.0.1:8080",
-		playerPath: "172.168.34.19:8080",
+		playerPath: "172.168.34.13:8080",
 		playerExampleId: '2462623268777',
 		bimUrl:window.location.origin,
 	},
