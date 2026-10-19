@@ -64,16 +64,21 @@
         <div v-for="(message,index) in messages" :key="index" class="message-box">
           <div v-if="message.role==='user'" class="my-message">
             <div class="message-content">
-              <div :style="colorConfig.message.my.content" class="message-text">
-                <p :style="colorConfig.message.my.name" class="message-name">{{ myself.name }}</p>
-                <p>{{ message.content }}</p>
-              </div>
-              <div v-if="timestampConfig.show" class="message-timestamp">
-                {{ formatTimestamp(message.timestamp) }}
-              </div>
-              <div class="bubble-actions">
-                <span class="ba-btn" title="Copy" @click="copyMessage(message.content)"><i
-                    class="el-icon-document-copy"></i></span>
+              <div class="bubble-wrap">
+                <div :style="colorConfig.message.my.content" class="message-text">
+                  <p :style="colorConfig.message.my.name" class="message-name">{{ myself.name }}</p>
+                  <p>{{ message.content }}</p>
+                </div>
+                <div class="bubble-meta">
+                  <div v-if="timestampConfig.show" class="message-timestamp">
+                    {{ formatTimestamp(message.timestamp) }}
+                  </div>
+                  <div class="bubble-actions">
+                    <span class="ba-btn" title="Copy" @click="copyMessage(message.content)">
+                      <i class="el-icon-document-copy"></i>
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="message-icon">
@@ -85,16 +90,20 @@
               <img v-if="profileConfig.my" :src="chatAi.profilePicture" :style="profileConfig.styles" alt="">
             </div>
             <div class="message-content">
-              <div :style="colorConfig.message.ai.content" class="message-text">
-                <p :style="colorConfig.message.ai.name" class="message-name">{{ chatAi.name }}</p>
-                <div class="md-body" v-html="renderMarkdown(message.content)"></div>
-              </div>
-              <div v-if="timestampConfig.show" class="message-timestamp">
-                {{ formatTimestamp(message.timestamp) }}
-              </div>
-              <div class="bubble-actions">
-                <span class="ba-btn" title="Copy" @click="copyMessage(message.content)"><i
-                    class="el-icon-document-copy"></i></span>
+              <div class="bubble-wrap">
+                <div :style="colorConfig.message.ai.content" class="message-text">
+                  <p :style="colorConfig.message.ai.name" class="message-name">{{ chatAi.name }}</p>
+                  <div class="md-body" v-html="renderMarkdown(message.content)"></div>
+                </div>
+                <div class="bubble-meta">
+                  <div v-if="timestampConfig.show" class="message-timestamp">
+                    {{ formatTimestamp(message.timestamp) }}
+                  </div>
+                  <div class="bubble-actions">
+                    <span class="ba-btn" title="Copy" @click="copyMessage(message.content)"><i
+                        class="el-icon-document-copy"></i></span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -628,7 +637,6 @@ export default {
             padding: 6px 10px;
             line-height: 1.55;
             margin: 5px 0 5px 0;
-            max-width: 70%;
             overflow-wrap: break-word;
             text-align: left;
             white-space: pre-wrap;
@@ -651,16 +659,14 @@ export default {
             padding: 2px 7px;
             border-radius: 15px;
             margin: 0;
-            max-width: 50%;
             overflow-wrap: break-word;
             text-align: left;
             font-size: 10px;
             color: #6fb7e2;
-            width: 100%;
             display: flex;
             -webkit-box-align: center;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: flex-start;
           }
         }
 
@@ -706,7 +712,6 @@ export default {
             padding: 6px 10px;
             line-height: 1.55;
             margin: 5px 0 5px 0;
-            max-width: 70%;
             overflow-wrap: break-word;
             text-align: left;
             white-space: pre-wrap;
@@ -729,15 +734,14 @@ export default {
             padding: 2px 7px;
             border-radius: 15px;
             margin: 0;
-            max-width: 50%;
             overflow-wrap: break-word;
             text-align: left;
             font-size: 10px;
             color: #6fb7e2;
-            width: 100%;
             display: flex;
             -webkit-box-align: center;
             align-items: center;
+            justify-content: flex-start;
           }
         }
       }
@@ -835,10 +839,27 @@ export default {
   }
 }
 
+.bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: fit-content;
+  max-width: 70%;
+}
+
+.bubble-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 2px;
+}
+
 .bubble-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
-  margin-top: 2px;
+  margin-left: auto;
   opacity: 0.55;
   transition: opacity 0.2s;
 
